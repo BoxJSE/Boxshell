@@ -1,0 +1,159 @@
+###################################
+#
+# bgroup - Box group control
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+read INPUT_Token < Token
+
+# create group
+
+if [ $1 = "-c" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "Name?:"
+		read name
+
+#		echo "Provenance?:"
+#		read provenance
+		
+#		echo "external_sync_identifier?:"
+#		read ext_id
+		
+		echo "description?:"
+		read description
+		
+		echo "invitability_level (admins_and_members)?:"
+		read invi_level
+		
+		echo "member_viewability_level (admins_only)?:"
+		read memview_level
+	
+#		curl -s https://api.box.com/2.0/groups \
+#		-H "Authorization: Bearer $INPUT_Token" \
+#		-d '{"name":"'$name'", "provenance":"'$provenance'", "external_sync_identifier":"'$ext_id'", "description":"'$description'", "invitability_level":"'$invi_level'", "member_viewability_level":"'$memview_level'"}' \
+#		-X POST |iconv -f windows-1251|jq .
+
+		curl -s https://api.box.com/2.0/groups \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"name":"'$name'", "description":"'$description'", "invitability_level":"'$invi_level'", "member_viewability_level":"'$memview_level'"}' \
+		-X POST |iconv -f windows-1251|jq .
+
+
+		
+	else
+	
+#		name=$2
+#		provenance=$3
+#		ext_id=$4
+#		description=$5
+#		invi_level=$6
+#		memview_level=$7
+
+		name=$2
+		description=$3
+		invi_level=$4
+		memview_level=$5
+
+		
+#		curl -s https://api.box.com/2.0/groups \
+#		-H "Authorization: Bearer $INPUT_Token" \
+#		-d '{"name":"'$name'", "provenance":"'$provenance'", "external_sync_identifier":"'$ext_id'", "description":"'$description'", "invitability_level":"'$invi_level'", "member_viewability_level":"'$memview_level'"}' \
+#		-X POST |iconv -f windows-1251|jq .
+
+		curl -s https://api.box.com/2.0/groups \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"name":"'$name'", "description":"'$description'", "invitability_level":"'$invi_level'", "member_viewability_level":"'$memview_level'"}' \
+		-X POST |iconv -f windows-1251|jq .
+		
+	fi
+
+# Get information about group
+
+elif [ $1 = "-g" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "Group ID?:"
+		read g_id
+
+		curl -s https://api.box.com/2.0/groups/$g_id \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+		
+	else
+		
+		g_id=$2
+		
+		curl -s https://api.box.com/2.0/groups/$g_id \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+		
+	fi
+
+# update group
+
+elif [ $1 = "-u" ]; then
+
+	if [ -z $2 ]; then
+
+		echo "Group ID?:"
+		read g_id
+		
+		echo "new group name?:"
+		read name
+		
+		curl -s https://api.box.com/2.0/groups/$g_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"name":"'$name'"}' \
+		-X PUT |iconv -f windows-1251|jq .
+
+	else
+	
+		g_id=$2
+		name=$3
+		
+		curl -s https://api.box.com/2.0/groups/$g_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"name":"'$name'"}' \
+		-X PUT |iconv -f windows-1251|jq .
+	
+	fi
+
+# Delete group
+
+elif [ $1 = "-d" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "Group ID?:"
+		read g_id
+
+		curl -s https://api.box.com/2.0/groups/$g_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-X DELETE |iconv -f windows-1251|jq .
+		
+	else
+		
+		g_id=$2
+		
+		curl -s https://api.box.com/2.0/groups/$g_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-X DELETE |iconv -f windows-1251|jq .
+		
+	fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bgroup
+
+else
+
+	echo "Error"
+	exit
+
+fi

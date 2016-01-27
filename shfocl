@@ -1,0 +1,93 @@
+###################################
+#
+# shfocl - show Folder collaboration
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then 
+
+	echo "Error"
+
+else 
+
+	if [ $1 = "-n" ]; then
+
+		if [ -z $2 ]; then
+
+			echo "Folder Name?:"
+			read Folder_Name
+
+			bconvni -fo $Folder_Name
+			read Folder_ID < conv
+
+			curl -s https://api.box.com/2.0/folders/$Folder_ID/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		else
+
+			bconvni -fo $2
+			read Folder_ID < conv
+	
+			curl -s https://api.box.com/2.0/folders/$Folder_ID/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		fi
+
+	elif  [ $1 = "-i" ]; then
+
+		if [ -z $2 ]; then
+
+			echo "Folder ID?:"
+			read Folder_ID
+
+			curl -s https://api.box.com/2.0/folders/$Folder_ID/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		else
+
+			curl -s https://api.box.com/2.0/folders/$2/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		fi
+
+	elif  [ $1 = "-c" ]; then
+
+		if [ -z $2 ]; then
+
+			echo "Collabotion ID?:"
+			read Collab_ID
+		
+			curl -s https://api.box.com/2.0/collaborations/$Collab_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . 
+
+		else
+	
+			curl -s https://api.box.com/2.0/collaborations/$2 \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . 
+		
+		fi
+
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name shfocl
+
+	else
+
+		echo "Error"
+	
+	fi
+
+fi
+
+
+
+
+

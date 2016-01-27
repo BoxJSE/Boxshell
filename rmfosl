@@ -1,0 +1,42 @@
+###################################
+#
+# rmfosl - remove Folder sharedlink
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+
+echo "Folder ID?:"
+read Folder_ID
+
+curl -s https://api.box.com/2.0/folders/$Folder_ID \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"shared_link": null}' \
+-X PUT |iconv -f windows-1251|jq -r '.shared_link'
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name rmfosl
+
+else
+
+curl -s https://api.box.com/2.0/folders/$1 \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"shared_link": null}' \
+-X PUT |iconv -f windows-1251|jq -r '.shared_link'
+
+fi
+
+
+
+
+
+
+
+

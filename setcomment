@@ -1,0 +1,137 @@
+###################################
+#
+# setcomment - set comment
+#
+#  
+# 
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+	if [ $1 = "-n" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			echo "Message?:"
+			read Message
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			curl -s https://api.box.com/2.0/comments \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-d '{"item":{"type":"file","id":"'$File_ID'"},"message":"'$Message'"}' \
+			-X POST |iconv -f windows-1251|jq '{Name:.created_by.name, Message:.message, Date:.created_at}'
+			
+		else
+
+			if [ -z $3 ]; then
+			
+				echo "Message?:"
+				read Message
+
+				bconvni -fi $2
+				read File_ID < conv
+
+				curl -s https://api.box.com/2.0/comments \
+				-H "Authorization: Bearer $INPUT_Token" \
+				-d '{"item":{"type":"file","id":"'$File_ID'"}, "message":"'$Message'"}' \
+				-X POST |iconv -f windows-1251|jq '{Name:.created_by.name, Message:.message, Date:.created_at}'
+						
+			elif  [ $3 = "-f" ]; then
+			
+				read Message < $4
+				
+				bconvni -fi $2
+				read File_ID < conv
+
+				curl -s https://api.box.com/2.0/comments \
+				-H "Authorization: Bearer $INPUT_Token" \
+				-d '{"item":{"type":"file","id":"'$File_ID'"}, "message":"'$Message'"}' \
+				-X POST |iconv -f windows-1251|jq '{Name:.created_by.name, Message:.message, Date:.created_at}'
+
+			else
+
+				Message=$3
+				
+				bconvni -fi $2
+				read File_ID < conv
+				
+				curl -g -s https://api.box.com/2.0/comments \
+				-H "Authorization: Bearer $INPUT_Token" \
+				-d '{"item":{"type":"file","id":"'$File_ID'"}, "message":"'$Message'"}' \
+			  	-X POST |iconv -f windows-1251|jq '{Name:.created_by.name, Message:.message, Date:.created_at}'
+		
+			fi
+		
+		fi
+	
+	elif [ $1 = "-i" ]; then
+
+		if [ -z $2 ]; then
+
+			echo "File ID?:"
+			read File_ID
+
+			echo "Message?:"
+			read Message
+
+			curl -s https://api.box.com/2.0/comments \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-d '{"item":{"type":"file","id":"'$File_ID'"},"message":"'$Message'"}' \
+			-X POST |iconv -f windows-1251|jq '{Name:.created_by.name, Message:.message, Date:.created_at}'
+
+		else
+
+			if [ -z $3 ]; then
+
+				File_ID=$2
+
+				echo "Message?:"
+				read Message
+
+				curl -s https://api.box.com/2.0/comments  \
+				-H "Authorization: Bearer $INPUT_Token" \
+				-d '{"item":{"type":"file","id":"'$File_ID'"},"message":"'$Message'"}' \
+				-X POST |iconv -f windows-1251|jq '{Name:.created_by.name, Message:.message, Date:.created_at}'
+						
+			else
+
+				File_ID=$2
+				Message=$3	
+				
+				curl -s https://api.box.com/2.0/comments \
+				-H "Authorization: Bearer $INPUT_Token" \
+				-d '{"item":{"type":"file","id":"'$File_ID'"},"message":"'$Message'"}' \
+				-X POST |iconv -f windows-1251|jq '{Name:.created_by.name, Message:.message, Date:.created_at}'
+		
+			fi
+		fi
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name setcomment
+	
+	
+	else
+		echo "Error"
+		exit
+	
+	fi
+
+fi

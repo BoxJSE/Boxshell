@@ -1,0 +1,402 @@
+###################################
+#
+# setmdt - set File Metadata template
+#
+#setmdt -nn file_name EID Template Source_file
+#setmdt -rn file_name EID Template Attribute value
+#setmdt -rnf file_name EID Template Source_file
+#setmdt -dn file_name EID Template
+#setmdt -ni file_name EID Template Source_file
+#setmdt -ri file_name EID Template Attribute value
+#setmdt -rif file_name EID Template Source_file
+#setmdt -di file_name EID Template 
+# 
+# Replace value sample = {"op": "add/replace", "path":"/customerName", "value":"77777"}, {"op": "add/replace", "path":"/region", "value":"US"},{"op": "add/replace", "path":"/contractExecutionDate", "value":"2015-09-01T00:00:00.000Z"},{"op": "add/replace", "path":"/contractvalue", "value":300000},{"op": "add/replace", "path":"/contractType", "value":"New"},{"op": "add/replace", "path":"/salesRepEmail", "value":"mishikawa+demo@box.com"},{"op": "add/replace", "path":"/salesSegment", "value":"Nationals"}
+#
+# New attribute sample = "customerName":"77777","region":"US","contractExecutionDate":"2015-09-01T00:00:00.000Z","contractvalue":300000,"contractType":"New","salesRepEmail":"mishikawa+demo@box.com","salesSegment":"Nationals"
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+
+##################################################################
+## Set new metadata template with File Name
+##################################################################
+
+	if [ $1 = "-nn" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+			
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+			
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			EID=$3
+			template=$4
+			S_File=$5
+			read S_File < $S_File
+
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## replace value in metadata template with file Name
+##########################################################
+
+	elif [ $1 = "-rn" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			EID=$3
+			template=$4
+			Att_Name=$5
+			Att_value=$6
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+##########################################################
+## replace from Source file to existing metadata template with file Name
+##########################################################
+
+	elif [ $1 = "-rnf" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+			EID=$3
+			template=$4
+			S_File=$5
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+
+
+##########################################################
+## remove metadata template with file Name
+##########################################################
+
+	elif [ $1 = "-dn" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-X DELETE |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			EID=$3
+			template=$4
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-X DELETE |iconv -f windows-1251|jq .
+
+		fi
+
+
+##################################################################
+## Set new metadata template with File Name
+##################################################################
+
+	elif [ $1 = "-ni" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+			
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+			
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			EID=$3
+			template=$4
+			S_File=$5
+			read S_File < $S_File
+
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## replace value in metadata template with file Name
+##########################################################
+
+	elif [ $1 = "-ri" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			EID=$3
+			template=$4
+			Att_Name=$5
+			Att_value=$6
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+##########################################################
+## replace from Source file to existing metadata template with file Name
+##########################################################
+
+	elif [ $1 = "-rif" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			EID=$3
+			template=$4
+			S_File=$5
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+##########################################################
+## remove metadata template with file Name
+##########################################################
+
+	elif [ $1 = "-di" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "EID?:"
+			read EID
+			
+			echo "template?:"
+			read template
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-X DELETE |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			EID=$3
+			template=$4
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/enterprise_$EID/$template \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-X DELETE |iconv -f windows-1251|jq .
+
+		fi
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name setmdt
+
+
+	else
+	
+		echo "Error"
+		exit
+	
+	fi
+
+fi
+
+

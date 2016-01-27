@@ -1,0 +1,34 @@
+###################################
+#
+# dcheck - File duplication check
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+read INPUT_FolderID < FolderID
+
+if [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name dcheck
+
+else
+
+	curl -s https://api.box.com/2.0/folders/$2 \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select( .Name == "'$1'")' >check
+		
+	read CheckID < Check
+
+	if [ -z $CheckID ]; then
+	
+	#	echo "Duplication check is OK. "
+		echo "true" > check	
+	
+	else
+	#	echo "File name is duplicated. Please check!!"
+		echo "false" > check
+	fi
+fi

@@ -1,0 +1,26 @@
+###################################
+#
+# bpwd - Pring working directory
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+if [ -z $1]; then
+
+	read INPUT_Token < Token
+
+	read INPUT_FolderID < FolderID
+
+	curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '{ ID:.id, Name:.name }'
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bpwd
+
+fi
+

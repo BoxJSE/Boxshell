@@ -1,0 +1,231 @@
+###################################
+#
+# preview - file preview
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+read INPUT_FolderID < FolderID
+flag=0
+
+#
+
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+
+	if [ $1 = "-n" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			curl -s https://api.box.com/2.0/files/$File_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link.url' > shlink
+			
+			read shlink < shlink
+			echo $shlink
+			
+			if [ $shlink = "null" ]; then
+
+				setfisl -i $File_ID Open |jq -r .url > shlink
+				flag=1
+				
+			fi
+			
+			read shlink < shlink 
+			open -a Google\ Chrome $shlink
+
+			
+			if [ $flag = 1 ]; then
+			
+				echo "Do you want to remove temporary sharedlink? (Y or N) "
+				read removeconf
+				
+				if [ $removeconf = "Y" ]; then
+				
+					echo "remove temporary shared link."
+					setfisl -i $File_ID remove
+					flag=0
+				
+				elif [ $removeconf = "N" ]; then
+				
+					echo "Keep temporary shared link."
+					flag=0
+				
+				else
+				
+					echo "Invalid input. remove temporary sharedlink."
+					setfisl -i $File_ID remove
+					flag=0
+				fi
+				
+			fi
+			
+		else
+
+			bconvni -fi $2
+			read File_ID < conv
+
+			curl -s https://api.box.com/2.0/files/$File_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link.url' > shlink
+
+			read shlink < shlink
+			echo $shlink
+			
+			if [ $shlink = "null" ]; then
+			
+				setfisl -i $File_ID Open |jq -r .url > shlink
+				flag=1
+				
+			fi
+			
+			read shlink < shlink 
+			open -a Google\ Chrome $shlink
+
+			if [ $flag = 1 ]; then
+			
+				echo "Do you want to remove temporary sharedlink? (Y or N) "
+				read removeconf
+				
+				if [ $removeconf = "Y" ]; then
+				
+					echo "remove temporary shared link."
+					setfisl -i $File_ID remove
+					flag=0
+				
+				elif [ $removeconf = "N" ]; then
+				
+					echo "Keep temporary shared link."
+					flag=0
+				
+				else
+				
+					echo "Invalid input. remove temporary sharedlink."
+					setfisl -i $File_ID remove
+					flag=0
+				fi
+				
+			fi
+
+		fi
+
+	elif [ $1 = "-i" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			curl -s https://api.box.com/2.0/files/$File_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link.url' > shlink
+			
+			read shlink < shlink
+			echo $shlink
+			
+			if [ $shlink = "null" ]; then
+			
+				setfisl -i $File_ID Open |jq -r .url > shlink
+				flag=1
+				
+			fi
+			
+			read shlink < shlink 
+			open -a Google\ Chrome $shlink
+
+			if [ $flag = 1 ]; then
+			
+				echo "Do you want to remove temporary sharedlink? (Y or N) "
+				read removeconf
+				
+				if [ $removeconf = "Y" ]; then
+				
+					echo "remove temporary shared link."
+					setfisl -i $File_ID remove
+					flag=0
+				
+				elif [ $removeconf = "N" ]; then
+				
+					echo "Keep temporary shared link."
+					flag=0
+				
+				else
+				
+					echo "Invalid input. remove temporary sharedlink."
+					setfisl -i $File_ID remove
+					flag=0
+				fi
+				
+			fi
+
+		else
+
+			File_ID=$2
+
+			curl -s https://api.box.com/2.0/files/$File_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link.url' > shlink
+			
+			read shlink < shlink
+			echo $shlink
+			
+			if [ $shlink = "null" ]; then
+
+				setfisl -i $File_ID Open |jq -r .url > shlink
+				flag=1
+				
+			fi
+			
+			read shlink < shlink 
+			open -a Google\ Chrome $shlink
+
+			if [ $flag = 1 ]; then
+			
+				echo "Do you want to remove temporary sharedlink? (Y or N) "
+				read removeconf
+				
+				if [ $removeconf = "Y" ]; then
+				
+					echo "remove temporary shared link."
+					setfisl -i $File_ID remove
+					flag=0
+				
+				elif [ $removeconf = "N" ]; then
+				
+					echo "Keep temporary shared link."
+					flag=0
+				
+				else
+				
+					echo "Invalid input. remove temporary sharedlink."
+					setfisl -i $File_ID remove
+					flag=0
+				fi
+				
+			fi
+
+		fi
+
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name preview
+
+
+	else
+
+		echo "Error"
+		exit
+	
+	fi
+fi

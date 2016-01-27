@@ -1,0 +1,42 @@
+###################################
+#
+# gettoken - Get Access Token
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+#
+
+if [ -z $1 ]; then
+
+	echo "Error"
+
+elif [ $1 = "-r" ]; then
+
+	read refresh_token < refresh_token
+	read client_ID < client_ID
+	read client_secret_ID < client_secret_ID
+
+	curl -s https://app.box.com/api/oauth2/token \ 
+	-d 'grant_type=refresh_token&refresh_token=$refresh_token&client_id=$client_ID&client_secret=$client_secret_ID' \
+ 	-X POST |iconv -f windows-1251|jq . > token_set
+ 
+ 	echo token_set
+	  
+	cat token_set | jq -r .access_token > Token
+	cat token_set | jq -r .refresh_token > refresh_token
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name gettoken
+
+else
+
+	echo "Invalid option"
+
+fi
+

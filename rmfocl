@@ -1,0 +1,33 @@
+###################################
+#
+# rmfocl - remove Folder collaboration
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+
+echo "Collaboration ID?:"
+read Collab_ID
+
+curl -s https://api.box.com/2.0/collaborations/$Collab_ID \
+-H "Authorization: Bearer $INPUT_Token" \
+-X DELETE |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name rmfocl
+
+else
+
+curl -s https://api.box.com/2.0/collaborations/$1 \
+-H "Authorization: Bearer $INPUT_Token" \
+-X DELETE |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
+
+fi
+

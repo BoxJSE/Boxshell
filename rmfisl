@@ -1,0 +1,50 @@
+###################################
+#
+# rmfisl - remove File sharedlink
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then
+
+echo "File ID?:"
+read File_ID
+
+#echo "Access mode? (Open, Company, Collaborators):"
+#read Access_ID
+
+curl -s https://api.box.com/2.0/files/$File_ID \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"shared_link": null}' \
+-X PUT |iconv -f windows-1251|jq -r '.shared_link'
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name rmfisl
+
+elif [ -z $2 ]; then
+
+echo "Access mode? (Open, Company, Collaborators):"
+read Access_ID
+
+curl -s https://api.box.com/2.0/files/$1 \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"shared_link": null}' \
+-X PUT |iconv -f windows-1251|jq -r '.shared_link'
+
+else
+
+curl -s https://api.box.com/2.0/files/$1 \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"shared_link": null}' \
+-X PUT |iconv -f windows-1251|jq -r '.shared_link'
+
+fi
+

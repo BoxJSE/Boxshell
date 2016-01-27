@@ -1,0 +1,132 @@
+###################################
+#
+# show - show status or configurations
+#
+# show sl fo -n folder_name
+# show sl fo -i folder_ID
+# show sl fi -n file_name
+# show sl fi -i folder_ID
+#
+# show cl -n folder_name
+# show cl -i folder_ID
+# show cl -c Collaboration_ID
+#
+# show lg -p stream_position
+# show lg -t Start_time End_time
+#
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+##################
+# Shared Link
+##################
+
+
+	if [ $1 = "sl" ]; then
+
+		if [ $2 = "fo" ]; then
+		
+			if [ $3 = "-n" ]; then
+			
+				shfosl -n $4
+			
+			elif [ $3 = "-i" ]; then
+			
+				shfosl -i $4
+
+			fi
+		
+		elif [ $2 = "fi" ]; then
+		
+			if [ $3 = "-n" ]; then
+			
+				shfisl -n $4
+			
+			elif [ $3 = "-i" ]; then
+			
+				shfisl -i $4
+
+			fi
+		fi
+
+##################
+# Collaboration
+##################
+
+	elif [ $1 = "cl" ]; then
+
+		if [ $2 = "-n" ]; then
+		
+			shfocl -n $3
+			
+		elif [ $2 = "-i" ]; then
+			
+			shfocl -i $3
+
+		elif [ $2 = "-c" ]; then
+		
+			shfocl -c $3
+	
+		else
+			echo "Error"
+			exit
+				
+		fi
+
+##################
+# log
+##################
+
+	elif [ $1 = "lg" ]; then
+
+		if [ $2 = "-p" ]; then
+		
+			shlog -p $3
+			
+		elif [ $2 = "-t" ]; then
+
+			if [ -z $3 ]; then
+				
+				echo "Enter Start date (YYYYMMDD)?"
+				read Stime
+				
+				echo "Enter End date (YYYYMMDD)?"
+				read Etime
+			
+				shlog -t $Stime $Etime
+			
+			else
+			
+				shlog -t $3 $4
+
+			fi
+			
+		else
+			echo "Error"
+			exit
+				
+		fi
+
+##################
+# Erro
+##################
+	else
+		exit
+	
+	fi
+
+		
+fi
+

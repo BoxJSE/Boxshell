@@ -1,0 +1,80 @@
+###################################
+#
+# longpoll - Long polling
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then
+
+	while :
+
+	do
+
+		curl -s https://api.box.com/2.0/events?stream_position=now \
+		-H "Authorization: Bearer $INPUT_Token"|iconv -f windows-1251|jq -r .next_stream_position > stream_position
+		read stream_position < stream_position
+
+#		echo $stream_position
+
+		curl -s https://api.box.com/2.0/events \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-X OPTIONS |iconv -f windows-1251|jq -r .entries[].url > logpoll_url
+
+		read logpoll_url < logpoll_url
+
+#		echo $logpoll_url
+
+		curl -s "$logpoll_url&stream_position=$stream_position" \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r .message > result
+
+		read result < result
+#		echo $result
+
+
+		if [ $result = "new_change" ]; then
+
+			curl -s https://api.box.com/2.0/events?stream_position=$stream_position \
+			-H "Authorization: Bearer $INPUT_Token"|iconv -f windows-1251|jq . > export.log
+			break
+
+		elif  [ $result = "reconnect" ]; then
+
+			echo "reconnect"
+
+		else
+
+			echo "Error"
+
+		fi
+	done
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name longpoll
+
+else
+
+	echo 
+
+fi
+
+
+
+
+ 
+
+
+
+
+
+
+
+

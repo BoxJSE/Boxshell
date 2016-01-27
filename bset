@@ -1,0 +1,117 @@
+###################################
+#
+# bset - Set paramaters
+#
+# bset sl fo -n folder_name Access_mode
+# bset sl fo -i folder_ID Access_mode
+# bset sl fi -n file_name Access_mode
+# bset sl fi -i file_ID Access_mode
+#
+# bset cl -n folder_name Collaborator_login Role
+# bset cl -i folder_ID Collaborator_login Role
+#
+# bset cl -ed Collaboration_ID Role
+# bset cl -rm Collaboration_ID
+#
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+##################
+# Shared Link
+##################
+
+
+	if [ $1 = "sl" ]; then
+
+		if [ $2 = "fo" ]; then
+		
+			if [ $3 = "-n" ]; then
+			
+				setfosl -n $4 $5
+			
+			elif [ $3 = "-i" ]; then
+			
+				setfosl -i $4 $5
+
+			fi
+		
+		elif [ $2 = "fi" ]; then
+		
+			if [ $3 = "-n" ]; then
+			
+				setfisl -n $4 $5
+			
+			elif [ $3 = "-i" ]; then
+			
+				setfisl -i $4 $5
+
+			fi
+		fi
+
+##################
+# Collaboration
+##################
+
+	elif [ $1 = "cl" ]; then
+
+		if [ $2 = "-n" ]; then
+		
+			setfocl -n $3 $4 $5
+			
+		elif [ $2 = "-i" ]; then
+			
+			setfocl -i $3 $4 $5
+
+		elif [ $2 = "-c" ]; then
+		
+			shfocl -c $3 $4 $5
+
+		elif [ $2 = "-rm" ]; then
+		
+			rmfocl $3
+	
+		elif [ $2 = "-ed" ]; then
+		
+			edfocl $3 $4
+
+		else
+
+			echo "Error"
+			exit
+				
+		fi
+
+##################
+# manual
+##################
+	elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bset
+
+##################
+# Erro
+##################
+	
+	else
+		exit
+	
+	fi
+
+		
+fi
+
+

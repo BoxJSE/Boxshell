@@ -1,0 +1,95 @@
+###################################
+#
+# buser - Box user control
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+# Enterprise user
+
+if [ $1 = "-e" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "login?:"
+		read login_name
+
+		echo "User name?:"
+		read user_name
+
+		curl -s https://api.box.com/2.0/users \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"login":"'$login_name'", "name":"'$user_name'"}' \
+		-X POST |iconv -f windows-1251|jq .
+		
+	else
+	
+		curl -s https://api.box.com/2.0/users \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"login":"'$2'", "name":"'$3'"}' \
+		-X POST |iconv -f windows-1251|jq .
+	
+	fi
+
+# App user
+
+elif [ $1 = "-a" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "User name?:"
+		read user_name
+
+		curl -s https://api.box.com/2.0/users \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"name":"'$user_name'","is_platform_access_only": true}' \
+		-X POST |iconv -f windows-1251|jq .
+		
+	else
+	
+		curl -s https://api.box.com/2.0/users \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"name":"'$2'","is_platform_access_only": true}' \
+		-X POST |iconv -f windows-1251|jq .
+	
+	fi
+
+# Get user information
+
+elif [ $1 = "-ie" ]; then
+
+		curl -s https://api.box.com/2.0/users \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+		
+elif [ $1 = "-iu" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "User ID?:"
+		read user_id
+
+		curl -s https://api.box.com/2.0/users/$user_id \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+		
+	else
+	
+		curl -s https://api.box.com/2.0/users/$2 \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+	
+	fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name buser
+
+else
+
+	echo "Error"
+	exit
+
+fi

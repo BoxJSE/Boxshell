@@ -1,0 +1,75 @@
+###################################
+#
+# settoken - Set Token
+#
+#
+###################################
+
+#!/bin/bash
+
+if [ -z $1 ]; then
+
+	echo "Error"
+
+elif [ $1 = "-d" ]; then
+
+	if [ -z $2 ]; then
+	
+		echo "Enter Token:"
+		read Token
+		echo $Token > Token
+
+	else
+	
+		echo $2 > Token
+	
+	fi
+
+elif [ $1 = "-i" ]; then
+
+	if [ -z $2 ]; then
+	
+		echo "Enter Client ID:"
+		read client_ID
+		echo $client_ID > client_ID
+
+		echo "client secret:"
+		read client_secret_ID
+		echo $client_secret_ID > client_secret_ID
+		
+	else
+	
+		echo $2 > client_ID
+		echo $3 > client_secret_ID
+	
+	fi
+
+elif [ $1 = "-t" ]; then
+
+	if [ -z $2 ]; then
+	
+		echo "Access Token:"
+		read Token
+		echo $Token > Token
+
+		echo "Refresh Token:"
+		read refresh_token
+		echo $refresh_token > refresh_token
+
+	else
+	
+		echo $2 > Token
+		echo $3 > refresh_token
+	
+	fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name settoken
+
+else
+
+	echo "Invalid option"
+
+fi
+

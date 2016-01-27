@@ -1,0 +1,109 @@
+
+###################################
+#
+# bsearch - Search
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+# Search
+
+if [ -z $1 ]; then
+	echo "Error"
+
+elif [ $1 = "-a" ]; then
+
+	if [ -z $3 ]; then
+	
+		curl -s https://api.box.com/2.0/search?query="$2" \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+
+	elif [ $3 = "-f" ]; then
+	
+		curl -s "https://api.box.com/2.0/search?query=$2&$4=$5" \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+
+	else
+	
+		echo "Invalid option"
+	fi
+ 
+elif [ $1 = "-l" ]; then 
+
+	if [ -z $3 ]; then
+	
+		curl -s https://api.box.com/2.0/search?query="$2" \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id }' 
+
+	elif [ $3 = "-f" ]; then
+	
+		curl -s "https://api.box.com/2.0/search?query=$2&$4=$5" \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id }' 
+
+	else
+	
+		echo "Invalid option"
+	fi
+
+elif [ $1 = "-ma" ]; then 
+
+	if [ -z $2 ]; then
+	
+		echo "Error"
+	
+	else
+
+		if [ -z $5 ]; then
+	
+			curl -g -s "https://api.box.com/2.0/search?mdfilters=[{\"templateKey\":\"$2\",\"scope\":\"enterprise\",\"filters\":{\"$3\":\"$4\"}}]" \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+
+		else
+		
+			curl -g -s "https://api.box.com/2.0/search?mdfilters=[{\"templateKey\":\"$2\",\"scope\":\"enterprise\",\"filters\":{\"$3\":{\"$4\":\"$5\"}}}]" \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . 
+			
+		fi
+
+	fi
+
+
+elif [ $1 = "-ml" ]; then 
+
+	if [ -z $2 ]; then
+	
+		echo "Error"
+	
+	else
+
+		if [ -z $5 ]; then
+	
+			curl -g -s "https://api.box.com/2.0/search?mdfilters=[{\"templateKey\":\"$2\",\"scope\":\"enterprise\",\"filters\":{\"$3\":\"$4\"}}]" \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id }' 
+
+		else
+		
+			curl -g -s "https://api.box.com/2.0/search?mdfilters=[{\"templateKey\":\"$2\",\"scope\":\"enterprise\",\"filters\":{\"$3\":{\"$4\":\"$5\"}}}]" \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id }' 
+			
+		fi
+
+	fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bsearch
+
+
+else
+	echo "Invalid Option"
+
+fi
+
+
+

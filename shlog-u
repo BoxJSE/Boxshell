@@ -1,0 +1,37 @@
+###################################
+#
+# shlog-u - show user events
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+	echo "Error"
+	exit
+fi
+
+if [ $1 = "-p" ]; then
+
+	curl -s "https://api.box.com/2.0/events?stream_position=$2" \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+	cat tmp.log | jq -r .entries[].created_at > timestamp
+	cat tmp.log |jq -r .next_stream_position > POS1
+	cat tmp.log | jq -r .entries[] > export.log
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name shlog-u
+	
+else
+
+	echo "Error"
+	exit
+
+fi
+

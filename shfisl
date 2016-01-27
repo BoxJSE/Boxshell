@@ -1,0 +1,80 @@
+###################################
+#
+# shfisl - show File sharedlink
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+
+	if [ $1 = "-n" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			curl -s https://api.box.com/2.0/files/$File_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link'
+
+		else
+
+			bconvni -fi $2
+			read File_ID < conv
+
+			curl -s https://api.box.com/2.0/files/$File_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link'
+
+		fi
+
+	elif [ $1 = "-i" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			curl -s https://api.box.com/2.0/files/$File_ID \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link'
+
+		else
+
+			curl -s https://api.box.com/2.0/files/$2 \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link'
+
+		fi
+
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name shfisl
+
+	else
+
+		echo "Error"
+		exit
+	
+	fi
+fi
+
+
+
+
+
+
+
+

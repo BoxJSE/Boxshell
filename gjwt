@@ -1,0 +1,37 @@
+###################################
+#
+# gjwt - get JWT
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+# if [ -z $1 ]; then
+
+	# creat JWT with python
+
+	# python jwt_create.py $2 $3
+
+	# get Access token
+
+	read assertion_value < jwt_assertion
+	client_id_value="jka8n8yuf6tcw0069xh3muvbgsxp9cut"
+	client_secret_value="57n3NI48gpVXAWs3NMDm0ERIw7GLDqzk"
+
+	curl -s https://api.box.com/oauth2/token \
+	-d 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&client_id='$client_id_value'&client_secret='$client_secret_value'&assertion='$assertion_value'' \
+	-X POST |iconv -f windows-1251|jq .
+
+# elif [ $1 = "-?" ]; then
+
+#	cat manual|bgrep Name gjwt
+
+# else
+
+#	echo "Error"
+
+
+# fi

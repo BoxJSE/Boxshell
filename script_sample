@@ -1,0 +1,14 @@
+Script_name:script_sample
+Waiting_time:10s
+Event_type:TASK_ASSIGNMENT_CREATE
+Max_par_num:4
+Parameter[1]:jq -r .entries[].source.item.id
+Parameter[2]:jq -r .entries[].created_by.id
+Parameter[3]:jq -r .entries[].created_by.name
+Parameter[4]:jq -r .entries[].event_type
+Parameter[5]:null
+Parameter[6]:null
+Parameter[7]:null
+Parameter[8]:null
+Parameter[9]:null
+Process_name:slfpw.sh

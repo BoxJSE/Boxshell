@@ -1,0 +1,34 @@
+###################################
+#
+# shuser - show user
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+	if [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name shuser
+	
+	else
+	
+		curl -s https://api.box.com/2.0/users/$1 \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+
+	fi
+
+fi
+
+

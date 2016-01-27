@@ -1,0 +1,46 @@
+###################################
+#
+# bmkdir - make directory (Folder)
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+read INPUT_FolderID < FolderID
+
+
+# mkdir
+
+if [ -z $1 ]; then
+
+	echo "Enter Folder name"
+	read folder_name
+	echo $INPUT_FolderID
+
+	curl -s https://api.box.com/2.0/folders \
+	-H "Authorization: Bearer $INPUT_Token" \
+	-d '{"name":"'$folder_name'", "parent": {"id": "'$INPUT_FolderID'"}}' \
+	-X POST |iconv -f windows-1251|jq -r '{Name:.name,ID:.id}'
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bmkdir
+
+else
+
+	curl -s https://api.box.com/2.0/folders \
+	-H "Authorization: Bearer $INPUT_Token" \
+	-d '{"name":"'$1'", "parent": {"id": "'$INPUT_FolderID'"}}' \
+	-X POST |iconv -f windows-1251|jq -r '{Name:.name,ID:.id}'
+
+	
+fi
+
+
+
+
+
+

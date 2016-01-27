@@ -1,0 +1,597 @@
+###################################
+#
+# setcmd - set File Custom Metadata
+#
+#setcmd -nn file_name Attibute Value
+#setcmd -an file_name Attibute Value
+#setcmd -rn file_name Attibute Value
+#setcmd -dn file_name
+#setcmd -nnf file_name File_name
+#setcmd -anf file_name File_name
+#setcmd -rnf file_name File_name
+#
+#setcmd -ni file_ID Attibute Value
+#setcmd -ai file_ID Attibute Value
+#setcmd -ri file_ID Attibute Value
+#setcmd -di file_ID
+#setcmd -nif file_ID File_name
+#setcmd -aif file_ID File_name
+#setcmd -rif file_ID File_name
+# 
+# Replace value sample = {"op":"replace","path":"/A","value":"VRR2"}
+#
+# New attribute sample = "A":"123","B":"456","C":"789"
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+##################################################################
+## Create new customer metadata with Single attribute with Name
+##################################################################
+
+	if [ $1 = "-nn" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{"'$Att_Name'": "'$Att_value'"}' \
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			Att_Name=$3
+			Att_value=$4
+
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{"'$Att_Name'": "'$Att_value'"}' \
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## Add Single attribute to existing metadata with Name
+##########################################################
+
+	
+	elif [ $1 = "-an" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "add", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+	
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			Att_Name=$3
+			Att_value=$4
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "add", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## replace Single attribute to existing metadata with Name
+##########################################################
+
+	elif [ $1 = "-rn" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+	
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			Att_Name=$3
+			Att_value=$4
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## Remove Custum metadata from file with Name
+##########################################################
+
+	elif [ $1 = "-dn" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-X DELETE |iconv -f windows-1251|jq .
+	
+	
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-X DELETE |iconv -f windows-1251|jq .
+	
+		fi
+
+##################################################################
+## Create new customer metadata with Source file with File Name
+##################################################################
+
+	elif [ $1 = "-nnf" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+			
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			S_File=$3
+			read S_File < $S_File
+
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## Add from Source file to existing metadata with file Name
+##########################################################
+
+	elif [ $1 = "-anf" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			S_File=$3
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## replace from Source file to existing metadata with file Name
+##########################################################
+
+	elif [ $1 = "-rnf" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File Name?:"
+			read File_Name
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_Name=$2
+
+			bconvni -fi $File_Name
+			read File_ID < conv
+
+			S_File=$3
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##################################################################
+## Create new customer metadata with Single attribute with File ID
+##################################################################
+
+	elif [ $1 = "-ni" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			echo $Att_Name
+			echo $Att_value
+			
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{"$Att_Name": "$Att_value"}' \
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			Att_Name=$3
+			Att_value=$4
+
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{"'$Att_Name'": "'$Att_value'"}' \
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## Add Single attribute to existing metadata with File ID
+##########################################################
+
+	
+	elif [ $1 = "-ai" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "add", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+	
+		else
+		
+			File_ID=$2
+			Att_Name=$3
+			Att_value=$4
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "add", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## replace Single attribute to existing metadata with File ID
+##########################################################
+
+	elif [ $1 = "-ri" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "Attibute Name?:"
+			read Att_Name
+			
+			echo "Attibute value?:"
+			read Att_value
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+	
+		else
+		
+			File_ID=$2
+			Att_Name=$3
+			Att_value=$4
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '[{"op": "replace", "path":"/'$Att_Name'", "value":"'$Att_value'"}]' \
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## Remove Custum metadata from file with File ID
+##########################################################
+
+	elif [ $1 = "-di" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-X DELETE |iconv -f windows-1251|jq .
+	
+	
+		else
+		
+			File_ID=$2
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-X DELETE |iconv -f windows-1251|jq .
+	
+		fi
+
+##################################################################
+## Create new customer metadata with Source file with File ID
+##################################################################
+
+	elif [ $1 = "-nif" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+			
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			S_File=$3
+			read S_File < $S_File
+
+			curl -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json" \
+			-d '{'$S_File'}' \
+			-X POST |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## Add Single attribute to existing metadata with File ID
+##########################################################
+
+	elif [ $1 = "-aif" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+
+			echo "Metadata source File Name?:"
+			read S_File
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			S_File=$3
+			read S_File < $S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+
+##########################################################
+## replace Single attribute to existing metadata with File ID
+##########################################################
+
+	elif [ $1 = "-rif" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "File ID?:"
+			read File_ID
+			read S_File < $S_File
+
+			echo "Metadata source File Name?:"
+			read S_File
+
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+		
+		else
+		
+			File_ID=$2
+			S_File=$3
+			read S_File < $S_File
+			
+			curl -g -s https://api.box.com/2.0/files/$File_ID/metadata/properties \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "Content-Type: application/json-patch+json" \
+			-d '['$S_File'] '\
+			-X PUT |iconv -f windows-1251|jq .
+	
+		fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name setcmd
+
+
+	else
+	
+		echo "Error"
+		exit
+	
+	fi
+
+fi
+
+

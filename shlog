@@ -1,0 +1,179 @@
+###################################
+#
+# shlog - show enterprise events
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+	echo "Error"
+	exit
+fi
+
+if [ $1 = "-p" ]; then
+
+	curl -s "https://api.box.com/2.0/events?stream_type=admin_logs&stream_position=$2" \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+	cat tmp.log | jq -r .entries[].created_at > timestamp
+	cat tmp.log |jq -r .next_stream_position > POS1
+	cat tmp.log | jq -r .entries[] > export.log
+
+elif [ $1 = "-ep" ]; then
+	
+
+POS1=$2
+EVNT=$3
+
+	# Get log
+	
+	curl -s "https://api.box.com/2.0/events?stream_type=admin_logs&stream_position=$POS1&event_type=$EVNT" \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+	cat tmp.log |jq -r .next_stream_position > POS2
+	read POS2 < POS2
+
+	echo "write"
+	cat tmp.log| jq -r .entries[] > export.log
+
+	if [ $POS1 != $POS2 ]; then
+	
+		while :
+		do
+		
+			POS1=$POS2
+			curl -s "https://api.box.com/2.0/events?stream_type=admin_logs&stream_position=$POS1&event_type=$EVNT&created_after=$S_Time&created_before=$E_Time" \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+			cat tmp.log |jq -r .next_stream_position > POS2
+			read POS2 < POS2
+
+			echo "write"
+			cat tmp.log| jq -r .entries[] >> export.log
+	
+			if  [ $POS1 = $POS2 ]; then
+	
+				echo "finish"
+				break
+			
+			fi
+		done
+	
+	else
+	
+		echo "finish"
+		
+	fi
+elif [ $1 = "-et" ]; then
+	
+
+POS1=0
+EVNT=$2
+S_Time=$3
+E_Time=$4
+
+	# Get log
+	
+	curl -s "https://api.box.com/2.0/events?stream_type=admin_logs&stream_position=$POS1&event_type=$EVNT&created_after=$S_Time&created_before=$E_Time" \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+	cat tmp.log |jq -r .next_stream_position > POS2
+	read POS2 < POS2
+
+	echo "write"
+	cat tmp.log| jq -r .entries[] > export.log
+
+	if [ $POS1 != $POS2 ]; then
+	
+		while :
+		do
+		
+			POS1=$POS2
+			curl -s "https://api.box.com/2.0/events?stream_type=admin_logs&stream_position=$POS1&event_type=$EVNT&created_after=$S_Time&created_before=$E_Time" \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+			cat tmp.log |jq -r .next_stream_position > POS2
+			read POS2 < POS2
+
+			echo "write"
+			cat tmp.log| jq -r .entries[] >> export.log
+	
+			if  [ $POS1 = $POS2 ]; then
+	
+				echo "finish"
+				break
+			
+			fi
+		done
+	
+	else
+	
+		echo "finish"
+		
+	fi
+	
+elif [ $1 = "-t" ]; then
+	
+
+POS1=0
+S_Time=$2
+E_Time=$3
+
+	# Get log
+	
+	curl -s "https://api.box.com/2.0/events?stream_type=admin_logs&stream_position=$POS1&created_after=$S_Time&created_before=$E_Time" \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+	cat tmp.log |jq -r .next_stream_position > POS2
+	read POS2 < POS2
+
+	echo "write"
+	cat tmp.log| jq -r .entries[] > export.log
+
+	if [ $POS1 != $POS2 ]; then
+	
+		while :
+		do
+		
+			POS1=$POS2
+			curl -s "https://api.box.com/2.0/events?stream_type=admin_logs&stream_position=$POS1&created_after=$S_Time&created_before=$E_Time" \
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq . > tmp.log
+
+			cat tmp.log |jq -r .next_stream_position > POS2
+			read POS2 < POS2
+
+			echo "write"
+			cat tmp.log| jq -r .entries[] >> export.log
+	
+			if  [ $POS1 = $POS2 ]; then
+	
+				echo "finish"
+				break
+			
+			fi
+		done
+	
+	else
+	
+		echo "finish"
+		
+	fi
+	
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name shlog
+	
+else
+
+	echo "Error"
+	exit
+
+fi
+
+

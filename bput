@@ -1,0 +1,60 @@
+###################################
+#
+# bput - Upload file
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+
+ 	echo "File name?:"
+	read File_name
+
+	echo "Folder ID?:"
+	read INPUT_FolderID
+
+		if [ -z $INPUT_FolderID ]; then
+
+			read INPUT_FolderID < FolderID
+
+		fi
+
+	curl -s https://upload.box.com/api/2.0/files/content \
+  	-H "Authorization: Bearer $INPUT_Token" -X POST \
+  	-F attributes='{"name":"'${File_name[@]##*\/}'", "parent":{"id":'$INPUT_FolderID'}}' \
+  	-F file=@$File_name|iconv -f windows-1251|jq .
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bput
+
+
+elif  [ -z $2 ]; then
+
+	read INPUT_FolderID < FolderID
+
+	File_name=$1
+	echo $File_name
+
+	curl -s https://upload.box.com/api/2.0/files/content \
+  -H "Authorization: Bearer $INPUT_Token" -X POST \
+  -F attributes='{"name":"'${File_name[@]##*\/}'", "parent":{"id":'$INPUT_FolderID'}}' \
+  -F file=@$File_name|iconv -f windows-1251|jq .
+
+else
+
+	File_name=$1
+	echo $File_name
+
+	curl -s https://upload.box.com/api/2.0/files/content \
+  -H "Authorization: Bearer $INPUT_Token" -X POST \
+  -F attributes='{"name":"'${File_name[@]##*\/}'", "parent":{"id":'$2'}}' \
+  -F file=@$File_name|iconv -f windows-1251|jq .
+
+fi
+

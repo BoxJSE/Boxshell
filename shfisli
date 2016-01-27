@@ -1,0 +1,38 @@
+###################################
+#
+# shfisl - show File sharedlink
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+
+echo "File ID?:"
+read File_ID
+
+curl -s https://api.box.com/2.0/files/$File_ID \
+-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link'
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name shfisli
+
+else
+
+curl -s https://api.box.com/2.0/files/$1 \
+-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.shared_link'
+
+fi
+
+
+
+
+
+
+
+

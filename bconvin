@@ -1,0 +1,36 @@
+###################################
+#
+# bconvin - convert ID to Name
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+read INPUT_Token < Token
+read INPUT_FolderID < FolderID
+
+if [ $1 = "-?" ]; then
+
+			cat manual|bgrep Name bconvin
+
+else
+
+
+		curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.ID =="'$1'")' |jq -r .Name > Check
+
+		read CheckID < Check
+
+		if [ -z $CheckID ]; then
+	 		echo "Error"
+	 		exit
+		
+		else
+			echo $CheckID
+			echo $CheckID > Conv
+
+		fi
+fi

@@ -1,0 +1,16 @@
+###################################
+#
+# bgrep - grep
+#
+#
+###################################
+
+if [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bgrep
+
+else
+
+	jq 'select( .'$1' |contains("'$2'"))'
+
+fi

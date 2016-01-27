@@ -1,0 +1,189 @@
+###################################
+#
+# bmv - move file
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+# cp
+
+if [ $1 = "-n" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "File Name?:"
+		read File_Name
+
+		echo "Folder ID?:"
+		read Folder2_ID
+
+		# File name conversion 
+			bconvni -fi $File_Name
+			read File_ID < Conv
+		
+		# File name check 
+#			dcheck $File_Name $Folder2_ID
+#			read CheckID < Check
+
+#			if [ $CheckID = "false" ]; then
+#				echo "Error. File is duplicated."
+#				exit
+#			fi
+
+		
+		curl -s https://api.box.com/2.0/files/$File_ID \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$Folder2_ID'}}' \
+		-X PUT |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+
+		
+	elif [ -z $3 ]; then
+	
+		echo "Folder ID?:"
+		read Folder2_ID
+
+		# File name conversion 
+			bconvni -fi $2
+			read File_ID < Conv
+
+		# File name check 
+#			dcheck $2 $Folder2_ID
+#			read CheckID < Check
+
+#			if [ $CheckID = "false" ]; then
+#				echo "Error. File is duplicated."
+#				exit
+#			fi
+
+				
+		curl -s https://api.box.com/2.0/files/$File_ID \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$Folder2_ID'}}' \
+		-X PUT |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+
+
+
+	
+	else
+	
+		# File name conversion 
+			bconvni -fi $2
+			read File_ID < Conv
+
+		# File name check 
+#			dcheck $2 $3
+#			read CheckID < Check
+
+#			if [ $CheckID = "false" ]; then
+#				echo "Error. File is duplicated."
+#				exit
+#			fi
+	
+	
+		curl -s https://api.box.com/2.0/files/$File_ID \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$3'}}' \
+		-X PUT |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+
+
+	
+	fi
+
+elif [ $1 = "-i" ]; then
+
+	if [ -z $2 ]; then
+
+		echo "File ID?:"
+		read File_ID
+
+		echo "Folder ID?:"
+		read Folder_ID
+
+		# File ID conversion 
+#			bconvin $File_ID
+#			read File_Name < Conv
+
+		# File name check 
+#			dcheck $File_Name $Folder_ID
+#			read CheckID < Check
+
+#			if [ $CheckID = "false" ]; then
+#				echo "Error. File is duplicated."
+#				exit
+#			fi
+
+
+		curl -s https://api.box.com/2.0/files/$File_ID \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$Folder_ID'}}' \
+		-X PUT |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+
+
+
+	
+	elif  [ -z $3 ]; then
+
+		echo "Folder ID?:"
+		read Folder_ID
+
+		# File ID conversion 
+#			bconvin $2
+#			read File_Name < Conv
+
+		# File name check 
+#			dcheck $File_Name $Folder_ID
+#			read CheckID < Check
+
+#			if [ $CheckID = "false" ]; then
+#				echo "Error. File is duplicated."
+#				exit
+#			fi
+
+
+		curl -s https://api.box.com/2.0/files/$File_ID \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$Folder_ID'}}' \
+		-X PUT |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+
+
+	else 
+
+		# File ID conversion 
+#			bconvin $2
+#			read File_Name < Conv
+
+		# File name check 
+#			dcheck $File_Name $3
+#			read CheckID < Check
+
+#			if [ $CheckID = "false" ]; then
+#				echo "Error. File is duplicated."
+#				exit
+#			fi
+	
+		curl -s https://api.box.com/2.0/files/$2 \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$3'}}' \
+		-X PUT |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+
+
+
+	
+	fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bmv
+
+
+else
+
+	echo "Error"
+	exit
+
+fi

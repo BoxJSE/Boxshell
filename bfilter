@@ -1,0 +1,17 @@
+###################################
+#
+# bfitler - filer JSON field
+#
+#
+###################################
+
+if [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bfilter
+else
+
+#	jq $1 $2
+	jq -r .$1 
+
+
+fi

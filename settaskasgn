@@ -1,0 +1,55 @@
+###################################
+#
+# settaskasgn - set task assignment
+#
+#  
+# 
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+	if [ $1 = "-c" ]; then
+
+		if [ -z $2 ]; then
+	
+			echo "Task assign ID?:"
+			read taskasgnid
+
+			curl -s https://api.box.com/2.0/task_assignments/$taskasgnid \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-d '{"resolution_state":"completed"}' \
+			-X PUT |iconv -f windows-1251|jq .
+
+		else
+
+			taskasgnid=$2
+
+			curl -s https://api.box.com/2.0/task_assignments/$taskasgnid \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-d '{"resolution_state":"completed"}' \
+			-X PUT |iconv -f windows-1251|jq .
+		
+		fi
+	
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name settaskasgn
+			
+	else
+		echo "Error"
+		exit
+	
+	fi
+
+fi

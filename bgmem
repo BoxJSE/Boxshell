@@ -1,0 +1,125 @@
+###################################
+#
+# bgmem - Box group membership control
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+read INPUT_Token < Token
+
+# create group membership
+
+if [ $1 = "-c" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "User_ID?:"
+		read user_id
+
+		echo "Group_ID?:"
+		read g_id
+	
+		curl -s https://api.box.com/2.0/group_memberships \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"user":{"id":"'$user_id'"}, "group":{"id":"'$g_id'"}}' \
+		-X POST |iconv -f windows-1251|jq .
+		
+	else
+	
+		user_id=$2
+		g_id=$3
+		
+		curl -s https://api.box.com/2.0/group_memberships \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"user":{"id":"'$user_id'"}, "group":{"id":"'$g_id'"}}' \
+		-X POST |iconv -f windows-1251|jq .
+		
+	fi
+
+# Get information about group membership
+
+elif [ $1 = "-g" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "Group membership ID?:"
+		read g_mem_id
+
+		curl -s https://api.box.com/2.0/group_memberships/$g_mem_id \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+		
+	else
+		
+		g_mem_id=$2
+
+		curl -s https://api.box.com/2.0/group_memberships/$g_mem_id \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
+		
+	fi
+
+# update group membership
+
+elif [ $1 = "-u" ]; then
+
+	if [ -z $2 ]; then
+
+		echo "Group membership ID?:"
+		read g_mem_id
+		
+		echo "new role?:"
+		read role
+		
+		curl -s https://api.box.com/2.0/group_memberships/$g_mem_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"role":"'$role'"}' \
+		-X PUT |iconv -f windows-1251|jq .
+
+	else
+	
+		g_mem_id=$2
+		role=$3
+		
+		curl -s https://api.box.com/2.0/group_memberships/$g_mem_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"role":"'$role'"}' \
+		-X PUT |iconv -f windows-1251|jq .
+	
+	fi
+	
+# Delete group membership
+		
+elif [ $1 = "-d" ]; then
+
+	if [ -z $2 ]; then
+		
+		echo "Group membership ID?:"
+		read g_mem_id
+
+		curl -s https://api.box.com/2.0/group_memberships/$g_mem_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-X DELETE |iconv -f windows-1251|jq .
+		
+	else
+		
+		g_mem_id=$2
+
+		curl -s https://api.box.com/2.0/group_memberships/$g_mem_id \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-X DELETE |iconv -f windows-1251|jq .
+		
+	fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bgmem
+
+else
+
+	echo "Error"
+	exit
+
+fi

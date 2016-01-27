@@ -1,0 +1,50 @@
+###################################
+#
+# edfocl - Edit Folder collaboration
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then
+
+echo "Collaboration ID?:"
+read Collab_ID
+
+echo "Role? (editor, viewer, previewer, uploader, preview uploader, viewer uploader, co-owner, owner):"
+read Role_ID
+
+curl -s https://api.box.com/2.0/collaborations/$Collab_ID \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"role": "'$Role_ID'"}' \
+-X PUT |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name edfocl
+
+elif [ -z $2 ]; then
+
+echo "Role? (editor, viewer, previewer, uploader, preview uploader, viewer uploader, co-owner, owner):"
+read Role_ID
+
+curl -s https://api.box.com/2.0/collaborations/$1 \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"role": "'$Role_ID'"}' \
+-X PUT |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
+
+else
+
+curl -s https://api.box.com/2.0/collaborations/$1 \
+-H "Authorization: Bearer $INPUT_Token" \
+-d '{"role": "'$2'"}' \
+-X PUT |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
+
+fi
+
