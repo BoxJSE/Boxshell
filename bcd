@@ -8,11 +8,13 @@
 # Initialize
 
 #!/bin/bash
-cd /Users/mishikawa/boxsh
 
+INPUT_FolderID=0
+echo $INPUT_FolderID > FolderID
 read INPUT_Token < Token
-
 read INPUT_FolderID < FolderID
+
+#
 
 if [ -z $1 ]; then
 
