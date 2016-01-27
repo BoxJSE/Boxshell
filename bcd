@@ -1,0 +1,113 @@
+###################################
+#
+# bcd - Change directly
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+cd /Users/mishikawa/boxsh
+
+read INPUT_Token < Token
+
+read INPUT_FolderID < FolderID
+
+if [ -z $1 ]; then
+
+	echo "0" > FolderID
+
+elif [ $1 = "-n" ]; then
+
+	if [ -z $2 ]; then
+
+#
+		IFS=$'\n'
+#
+		echo "Folder name"
+		read FolderID2
+
+		curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name =="'$FolderID2'")' |jq -r .ID > Check
+
+		read CheckID < Check
+
+		if [ -z $CheckID ]; then
+	 		echo "Error"
+	 		exit
+		
+		else
+			echo $CheckID > FolderID
+
+		fi
+	
+	else 
+
+#
+#	IFS=$'\n'
+	dummy=$1
+	shift
+	folder_name=$*
+	echo $folder_name
+
+#
+
+		curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
+		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name == "'$folder_name'")' |jq -r .ID > Check
+#		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name =="Sales Reference")' |jq -r .ID > Check
+
+		read CheckID < Check
+ 		
+		 if [ -z $CheckID ]; then
+	 		echo "Error"
+	 		exit
+		
+		else
+			echo $CheckID > FolderID
+			
+		fi
+
+	fi
+
+elif [ $1 = ".." ]; then
+
+	curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
+	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r .parent.id > FolderID
+
+elif [ $1 = "-i" ]; then
+
+	if [ -z $2 ]; then
+
+		echo "Folder ID"
+		read FolderID2
+
+		if [ -z $FolderID2 ]; then
+			echo "Error"
+			exit
+		else
+			echo $FolderID2 > FolderID
+		fi
+		
+	else 
+
+		echo $2 > FolderID
+	
+	fi
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name bcd
+
+else 
+
+	echo "Error"
+	exit
+
+fi
+
+
+
+
+
+
