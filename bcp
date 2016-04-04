@@ -99,20 +99,6 @@ elif [ $1 = "-i" ]; then
 		echo "Folder ID?:"
 		read Folder_ID
 
-		# File ID conversion 
-			bconvin $File_ID
-			read File_Name < Conv
-
-		# File name check 
-			dcheck $File_Name $Folder_ID
-			read CheckID < Check
-
-			if [ $CheckID = "false" ]; then
-				echo "Error. File is duplicated."
-				exit
-			fi
-
-
 		curl -s https://api.box.com/2.0/files/$File_ID/copy \
 		-H "Authorization: Bearer $INPUT_Token" \
 		-d '{"parent":{"id" : '$Folder_ID'}}' \
@@ -123,21 +109,7 @@ elif [ $1 = "-i" ]; then
 		echo "Folder ID?:"
 		read Folder_ID
 
-		# File ID conversion 
-			bconvin $2
-			read File_Name < Conv
-
-		# File name check 
-			dcheck $File_Name $Folder_ID
-			read CheckID < Check
-
-			if [ $CheckID = "false" ]; then
-				echo "Error. File is duplicated."
-				exit
-			fi
-
-
-		curl -s https://api.box.com/2.0/files/$2/copy \
+ 		curl -s https://api.box.com/2.0/files/$2/copy \
 		-H "Authorization: Bearer $INPUT_Token" \
 		-d '{"parent":{"id" : '$Folder_ID'}}' \
 		-X POST |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
@@ -145,6 +117,40 @@ elif [ $1 = "-i" ]; then
 	else 
 
 		curl -s https://api.box.com/2.0/files/$2/copy \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$3'}}' \
+		-X POST |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+	
+	fi
+	
+elif [ $1 = "-o" ]; then
+
+	if [ -z $2 ]; then
+
+		echo "Source Folder ID?:"
+		read S_Folder_ID
+
+		echo "Destination Folder ID?:"
+		read D_Folder_ID
+
+		curl -s https://api.box.com/2.0/folders/$S_Folder_ID/copy \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$D_Folder_ID'}}' \
+		-X POST |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+	
+	elif  [ -z $3 ]; then
+
+		echo "Destination Folder ID?:"
+		read D_Folder_ID
+
+ 		curl -s https://api.box.com/2.0/folders/$2/copy \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-d '{"parent":{"id" : '$D_Folder_ID'}}' \
+		-X POST |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'
+	
+	else 
+
+		curl -s https://api.box.com/2.0/folders/$2/copy \
 		-H "Authorization: Bearer $INPUT_Token" \
 		-d '{"parent":{"id" : '$3'}}' \
 		-X POST |iconv -f windows-1251|jq -r '{Name:.name, ID:.id}'

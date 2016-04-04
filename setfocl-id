@@ -10,9 +10,6 @@
 #!/bin/bash
 read INPUT_Token < Token
 
-PRE_IFS=$IFS
-IFS=$'\n'
-
 if [ -z $1 ]; then
 	echo "error"
 	exit
@@ -26,29 +23,29 @@ else
 			echo "Folder Name?:"
 			read Folder_Name
 
-			echo "User login ID (Mail address)?:"
-			read Login_ID
+			echo "User ID ?:"
+			read user_ID
 
 			echo "Role? (editor, viewer, previewer, uploader, preview uploader, viewer uploader, co-owner, owner):"
 			read Access_ID
 
 			bconvni -fo $Folder_Name
-			read Folder_ID < Conv
+			read Folder_ID < conv
 
 			curl -s https://api.box.com/2.0/collaborations \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "login": "'$Login_ID'"}, "role": "'$Access_ID'"}' \
+			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "id": "'$user_ID'"}, "role": "'$Access_ID'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 
 		else
 
 			bconvni -fo $2
-			read Folder_ID < Conv
+			read Folder_ID < conv
 
 			curl -s https://api.box.com/2.0/collaborations \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "login": "'$3'"}, "role": "'$4'"}' \
+			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "id": "'$3'"}, "role": "'$4'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 		fi
@@ -60,22 +57,22 @@ else
 			echo "Folder ID?:"
 			read Folder_ID
 
-			echo "User login ID (Mail address)?:"
-			read Login_ID
+			echo "User ID?:"
+			read user_ID
 
 			echo "Role? (editor, viewer, previewer, uploader, preview uploader, viewer uploader, co-owner, owner):"
 			read Access_ID
 
 			curl -s https://api.box.com/2.0/collaborations \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "login": "'$Login_ID'"}, "role": "'$Access_ID'"}' \
+			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "id": "'$user_ID'"}, "role": "'$Access_ID'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 		else
 
 			curl -s https://api.box.com/2.0/collaborations \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$2'", "type": "folder"}, "accessible_by": { "login": "'$3'"}, "role": "'$4'"}' \
+			-d '{"item": { "id": "'$2'", "type": "folder"}, "accessible_by": { "id": "'$3'"}, "role": "'$4'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 		fi
@@ -93,23 +90,26 @@ else
 			echo "Role? (editor, viewer, previewer, uploader, preview uploader, viewer uploader, co-owner, owner):"
 			read Access_ID
 
+			echo "User ID?:"
+			read user_ID
+
 			bconvni -fo $Folder_Name
-			read Folder_ID < Conv
+			read Folder_ID < conv
 
 			curl -s https://api.box.com/2.0/collaborations/?notify=false \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "login": "'$Login_ID'"}, "role": "'$Access_ID'"}' \
+			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "id": "'$user_ID'"}, "role": "'$Access_ID'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 
 		else
 
 			bconvni -fo $2
-			read Folder_ID < Conv
+			read Folder_ID < conv
 
 			curl -s https://api.box.com/2.0/collaborations/?notify=false \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "login": "'$3'"}, "role": "'$4'"}' \
+			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "id": "'$3'"}, "role": "'$4'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 		fi
@@ -127,16 +127,19 @@ else
 			echo "Role? (editor, viewer, previewer, uploader, preview uploader, viewer uploader, co-owner, owner):"
 			read Access_ID
 
+			echo "User ID?:"
+			read user_ID
+
 			curl -s https://api.box.com/2.0/collaborations/?notify=false \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "login": "'$Login_ID'"}, "role": "'$Access_ID'"}' \
+			-d '{"item": { "id": "'$Folder_ID'", "type": "folder"}, "accessible_by": { "id": "'$user_ID'"}, "role": "'$Access_ID'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 		else
 
 			curl -s https://api.box.com/2.0/collaborations/?notify=false \
 			-H "Authorization: Bearer $INPUT_Token" \
-			-d '{"item": { "id": "'$2'", "type": "folder"}, "accessible_by": { "login": "'$3'"}, "role": "'$4'"}' \
+			-d '{"item": { "id": "'$2'", "type": "folder"}, "accessible_by": { "id": "'$3'"}, "role": "'$4'"}' \
 			-X POST |iconv -f windows-1251|jq -r '{ ID: .id, Name: .created_by.name , Login: .created_by.login, Status: .status, Role: .role}'
 
 		fi
@@ -195,6 +198,3 @@ else
 	fi
 
 fi
-
-IFS=$PRE_IFS
-

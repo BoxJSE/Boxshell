@@ -27,14 +27,15 @@ elif [ $1 = "-n" ]; then
 
 	if [ -z $2 ]; then
 
-#
-		IFS=$'\n'
-#
 		echo "Folder name"
 		read FolderID2
+		
+		echo "As user ID"
+		read Auser_ID
 
 		curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
-		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name =="'$FolderID2'")' |jq -r .ID > Check
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: '$Auser_ID" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name =="'$FolderID2'")' |jq -r .ID > Check
 
 		read CheckID < Check
 
@@ -49,18 +50,9 @@ elif [ $1 = "-n" ]; then
 	
 	else 
 
-#
-#	IFS=$'\n'
-	dummy=$1
-	shift
-	folder_name=$*
-	echo $folder_name
-
-#
-
 		curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
-		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name == "'$folder_name'")' |jq -r .ID > Check
-#		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name =="Sales Reference")' |jq -r .ID > Check
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $3" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Name == "'$2'")' |jq -r .ID > Check
 
 		read CheckID < Check
  		
@@ -78,7 +70,8 @@ elif [ $1 = "-n" ]; then
 elif [ $1 = ".." ]; then
 
 	curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
-	-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r .parent.id > FolderID
+	-H "Authorization: Bearer $INPUT_Token" \
+	-H "As-User: $2" |iconv -f windows-1251|jq -r .parent.id > FolderID
 
 elif [ $1 = "-i" ]; then
 
@@ -102,7 +95,7 @@ elif [ $1 = "-i" ]; then
 
 elif [ $1 = "-?" ]; then
 
-	cat manual|bgrep Name bcd
+	cat manual|bgrep Name bcd-asuser
 
 else 
 

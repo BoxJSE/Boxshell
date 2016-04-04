@@ -1,0 +1,146 @@
+###################################
+#
+# tokengen - Token generator
+#
+# redirect URL : https://www.umaza.net/token.php 
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+
+if [ -z $1 ]; then
+
+	echo "Error"
+
+elif [ $1 = "-n" ]; then
+
+	if [ -z $2 ]; then
+
+		echo "Enter client ID?:"
+		read client_ID
+		echo $client_ID > client_ID
+
+		echo "Enter client secret?:"
+		read client_secret_ID
+		echo $client_secret_ID > client_secret_ID
+
+	else
+	
+		echo $2 > client_ID
+		read client_ID < client_ID
+	
+		echo $3 > client_secret_ID
+		read client_secret_ID < client_Secret_ID
+	
+	fi
+
+	curl -s https://www.umaza.net/code.txt > code
+	read code1 < code
+	
+	open -a Safari 'https://app.box.com/api/oauth2/authorize?response_type=code&client_id='$client_ID''
+#	open -a Google\ Chrome 'https://app.box.com/api/oauth2/authorize?response_type=code&client_id='$client_ID''
+
+	while :
+	do
+	
+		curl -s https://www.umaza.net/code.txt > code
+		read code2 < code
+		
+		if [ $code1 = $code2 ]; then
+			
+			sleep 5s
+			
+		else
+			
+			authcode=$code2
+			break
+		
+		fi
+
+	done
+
+	curl -s https://app.box.com/api/oauth2/token \
+	-d 'grant_type=authorization_code&code='$authcode'&client_id='$client_ID'&client_secret='$client_secret_ID'' \
+	-X POST |iconv -f windows-1251|jq . > token_set
+
+	cat token_set | jq -r .access_token > Token
+	cat token_set | jq -r .refresh_token > refresh_token
+	
+	read INPUT_Token < Token
+	settoken -d $INPUT_Token
+
+	echo "Get Token!!"
+	FolderID=0
+
+elif [ $1 = "-r" ]; then
+
+	read client_ID < client_ID
+	read client_secret_ID < client_secret_ID
+
+	curl -s https://www.umaza.net/code.txt > code
+	read code1 < code
+
+	open -a Safari 'https://app.box.com/api/oauth2/authorize?response_type=code&client_id='$client_ID''
+#	open -a Google\ Chrome 'https://app.box.com/api/oauth2/authorize?response_type=code&client_id='$client_ID''
+
+	while :
+	do
+	
+		curl -s https://www.umaza.net/code.txt > code
+		read code2 < code
+		
+		if [ $code1 = $code2 ]; then
+			
+			sleep 5s
+			
+		else
+			
+			authcode=$code2
+			break
+		
+		fi
+
+	done
+
+	curl -s https://app.box.com/api/oauth2/token \
+	-d 'grant_type=authorization_code&code='$authcode'&client_id='$client_ID'&client_secret='$client_secret_ID'' \
+	-X POST |iconv -f windows-1251|jq . > token_set
+
+	cat token_set | jq -r .access_token > Token
+	cat token_set | jq -r .refresh_token > refresh_token
+
+	read INPUT_Token < Token
+	settoken -d $INPUT_Token
+
+	echo "Get Token!!"
+	FolderID=0
+
+elif [ $1 = "-f" ]; then
+
+	read client_ID < client_ID
+	read client_secret_ID < client_secret_ID
+	read refresh_token < refresh_token
+	
+	curl -s https://app.box.com/api/oauth2/token \
+	-d 'grant_type=refresh_token&refresh_token='$refresh_token'&client_id='$client_ID'&client_secret='$client_secret_ID'' \
+	-X POST |iconv -f windows-1251|jq . > token_set
+
+	cat token_set | jq -r .access_token > Token
+	cat token_set | jq -r .refresh_token > refresh_token
+
+	read INPUT_Token < Token
+	settoken -d $INPUT_Token
+
+	echo "Get Token!!"
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name tokengen
+
+else
+
+	echo "Invalid option"
+
+fi

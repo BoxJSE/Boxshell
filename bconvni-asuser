@@ -1,6 +1,6 @@
 ###################################
 #
-# bconvni - convert Name to ID
+# bconvni-asuser - convert Name to ID with As-User
 #
 #
 ###################################
@@ -20,7 +20,8 @@ read INPUT_FolderID < FolderID
 if [ $1 = "-fo" ]; then
 
 		curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
-		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Type =="folder")' |jq 'select(.Name =="'$2'")' |jq -r .ID > Check
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $3" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Type =="folder")' |jq 'select(.Name =="'$2'")' |jq -r .ID > Check
 
 		read CheckID < Check
 
@@ -29,7 +30,7 @@ if [ $1 = "-fo" ]; then
 	 		exit
 		
 		else
-			echo $CheckID
+#			echo $CheckID
 			echo $CheckID > Conv
 
 		fi
@@ -37,7 +38,8 @@ if [ $1 = "-fo" ]; then
 elif [ $1 = "-fi" ]; then
 
 		curl -s https://api.box.com/2.0/folders/$INPUT_FolderID \
-		-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Type =="file")'|jq 'select(.Name =="'$2'")' |jq -r .ID > Check
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $3" |iconv -f windows-1251| jq -r '.item_collection.entries[] | { Type: .type, Name: .name, ID: .id }' |jq 'select(.Type =="file")'|jq 'select(.Name =="'$2'")' |jq -r .ID > Check
 
 		read CheckID < Check
 
@@ -46,14 +48,14 @@ elif [ $1 = "-fi" ]; then
 	 		exit
 		
 		else
-			echo $CheckID
+#			echo $CheckID
 			echo $CheckID > Conv
 
 		fi
 
 elif [ $1 = "-?" ]; then
 
-	cat manual|bgrep Name bconvni
+	cat manual|bgrep Name bconvni-asuser
 
 else
 		

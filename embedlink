@@ -1,6 +1,6 @@
 ###################################
 #
-# preview - file preview with Embed Link
+# embedlink - file preview with Embed Link
 #
 #
 ###################################
@@ -10,9 +10,6 @@
 #!/bin/bash
 read INPUT_Token < Token
 read INPUT_FolderID < FolderID
-
-PRE_IFS=$IFS
-IFS=$'\n'
 
 #
 
@@ -95,8 +92,3 @@ else
 	
 	fi
 fi
-
-
-IFS=$PRE_IFS
-
-

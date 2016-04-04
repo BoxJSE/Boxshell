@@ -11,6 +11,8 @@
 read INPUT_Token < Token
 read INPUT_FolderID < FolderID
 
+PRE_IFS=$IFS
+IFS=$'\n'
 
 # mkdir
 
@@ -39,6 +41,7 @@ else
 	
 fi
 
+IFS=$PRE_IFS
 
 
 

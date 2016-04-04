@@ -59,7 +59,7 @@ elif [ $1 = "-ma" ]; then
 	else
 
 		if [ -z $5 ]; then
-	
+
 			curl -g -s "https://api.box.com/2.0/search?mdfilters=[{\"templateKey\":\"$2\",\"scope\":\"enterprise\",\"filters\":{\"$3\":\"$4\"}}]" \
 			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq .
 
@@ -84,12 +84,12 @@ elif [ $1 = "-ml" ]; then
 		if [ -z $5 ]; then
 	
 			curl -g -s "https://api.box.com/2.0/search?mdfilters=[{\"templateKey\":\"$2\",\"scope\":\"enterprise\",\"filters\":{\"$3\":\"$4\"}}]" \
-			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id }' 
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id, Parent_Name: .parent.name, Parent_ID: .parent.id }' 
 
 		else
 		
 			curl -g -s "https://api.box.com/2.0/search?mdfilters=[{\"templateKey\":\"$2\",\"scope\":\"enterprise\",\"filters\":{\"$3\":{\"$4\":\"$5\"}}}]" \
-			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id }' 
+			-H "Authorization: Bearer $INPUT_Token" |iconv -f windows-1251|jq -r '.entries[] | { Type: .type, Name: .name, ID: .id, Parent_Name: .parent.name, Parent_ID: .parent.id }' 
 			
 		fi
 

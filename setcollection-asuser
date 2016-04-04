@@ -1,0 +1,96 @@
+###################################
+#
+# setcollection-asuser - set collection with As-User
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+read INPUT_FolderID < FolderID
+
+
+if [ -z $1 ]; then
+	echo "error"
+	exit
+
+else
+
+# get collection faborites ID
+
+	if [ $1 = "-getid" ]; then
+
+		curl -s https://api.box.com/2.0/collections \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $2" | iconv -f windows-1251|jq -r .entries[]
+
+	elif [ $1 = "-s" ]; then
+
+		curl -s "https://api.box.com/2.0/collections/$2/items?limit=10&offset=0" \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $3" | iconv -f windows-1251|jq -r .entries[]
+
+	elif [ $1 = "-addfo" ]; then
+
+		curl -s https://api.box.com/2.0/folders/$2 \ \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $4" \
+		-d '{"collections": [{"id":"'$3'"}]}' \
+		-X PUT |iconv -f windows-1251|jq -r .
+
+	elif [ $1 = "-addfi" ]; then
+
+		curl -s https://api.box.com/2.0/files/$2 \ \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $4" \
+		-d '{"collections": [{"id":"'$3'"}]}' \
+		-X PUT |iconv -f windows-1251|jq -r .
+	
+	elif [ $1 = "-delfo" ]; then
+
+		curl -s https://api.box.com/2.0/folders/$2 \ \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $4" \
+		-d '{"collections": [{"id":"'$3'"}]}' \
+		-X DELETE |iconv -f windows-1251|jq -r .
+
+
+	elif [ $1 = "-delfi" ]; then
+
+		curl -s https://api.box.com/2.0/files/$2 \ \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $4" \
+		-d '{"collections": [{"id":"'$3'"}]}' \
+		-X DELETE |iconv -f windows-1251|jq -r .
+
+	elif [ $1 = "-addbook" ]; then
+
+		curl -s https://api.box.com/2.0/web_links/$2 \ \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $4" \
+		-d '{"collections": [{"id":"'$3'"}]}' \
+		-X PUT |iconv -f windows-1251|jq -r .
+
+	elif [ $1 = "-delbook" ]; then
+
+		curl -s https://api.box.com/2.0/web_links/$2 \ \
+		-H "Authorization: Bearer $INPUT_Token" \
+		-H "As-User: $4" \
+		-d '{"collections": [{"id":"'$3'"}]}' \
+		-X DELETE |iconv -f windows-1251|jq -r .
+
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name setcollection-asuser
+	
+	else
+		echo "Error"
+		exit
+	
+	fi
+
+fi
+
+

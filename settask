@@ -22,8 +22,11 @@ if [ -z $1 ]; then
 else
 
 	if [ $1 = "-n" ]; then
-
-		if [ -z $2 ]; then
+	
+	PRE_IFS=$IFS
+	IFS=$'\n'
+	
+	if [ -z $2 ]; then
 	
 			echo "File Name?:"
 			read File_Name
@@ -55,10 +58,10 @@ else
 			
 		else
 
-			File_Name=$3
-			Message=$4
-			Due_date=$5
-			Assigned_user=$6
+			File_Name=$2
+			Message=$3
+			Due_date=$4
+			Assigned_user=$5
 
 			bconvni -fi $2
 			read File_ID < conv
@@ -78,8 +81,13 @@ else
 			
 		
 		fi
+
+	IFS=$PRE_IFS
 	
 	elif [ $1 = "-i" ]; then
+
+	PRE_IFS=$IFS
+	IFS=$'\n'
 
 		if [ -z $2 ]; then
 	
@@ -110,13 +118,15 @@ else
 
 		else
 
-			File_ID=$3
-			Message=$4
-			Due_date=$5
-			Assigned_user=$6
+			File_ID=$2
+			Message=$3
+			Due_date=$4
+			Assigned_user=$5
 
-			bconvni -fi $2
-			read File_ID < conv
+			echo $File_ID
+			echo $Message
+			echo $Due_date
+			echo $Assigned_user
 
 			curl -s https://api.box.com/2.0/tasks \
 			-H "Authorization: Bearer $INPUT_Token" \
@@ -130,11 +140,15 @@ else
 			-H "Authorization: Bearer $INPUT_Token" \
 			-d '{"task":{"id":"'$taskid'","type":"task"},"assign_to":{ "login":"'$Assigned_user'"}}' \
 			-X POST |iconv -f windows-1251|jq .
-			
-		
+
 		fi
 
+	IFS=$PRE_IFS
+
 	elif [ $1 = "-a" ]; then
+
+	PRE_IFS=$IFS
+	IFS=$'\n'
 
 		if [ -z $2 ]; then
 	
@@ -160,6 +174,8 @@ else
 			-X POST |iconv -f windows-1251|jq .
 		
 		fi
+
+	IFS=$PRE_IFS
 	
 	elif [ $1 = "-?" ]; then
 
