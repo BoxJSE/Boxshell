@@ -10,6 +10,9 @@
 #!/bin/bash
 read INPUT_Token < Token
 
+PRE_IFS=$IFS
+IFS=$'\n'
+
 if [ -z $1 ]; then
 	echo "error"
 	exit
@@ -230,3 +233,5 @@ else
 	fi
 
 fi
+
+IFS=$PRE_IFS

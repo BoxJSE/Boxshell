@@ -1,0 +1,49 @@
+###################################
+#
+# vput - View API file upload and convert
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+# read INPUT_Token < Token
+read viewkey < viewkey
+
+if [ -z $1 ]; then
+
+ 	echo "File name?:"
+	read File_name
+
+	curl -s https://upload.view-api.box.com/1/documents \
+	-H "Authorization: Token $viewkey" \
+	-H "Content-type: multipart/form-data" \
+	-F file=@$File_name|iconv -f windows-1251|jq .
+
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name vput
+
+
+elif  [ -z $2 ]; then
+
+	File_name=$1
+
+	curl -s https://upload.view-api.box.com/1/documents \
+	-H "Authorization: Token $viewkey" \
+	-H "Content-type: multipart/form-data" \
+	-F file=@$File_name|iconv -f windows-1251|jq .
+
+else
+
+	File_name=$1
+	echo $File_name
+
+	curl -s https://upload.view-api.box.com/1/documents \
+	-H "Authorization: Token $viewkey" \
+	-H "Content-type: multipart/form-data" \
+	-F file=@$File_name|iconv -f windows-1251|jq .
+
+fi
+

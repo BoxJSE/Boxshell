@@ -25,6 +25,20 @@ elif [ $1 = "-d" ]; then
 	
 	fi
 
+elif [ $1 = "-v" ]; then
+
+	if [ -z $2 ]; then
+	
+		echo "Enter view API key:"
+		read view_api_key
+		echo $view_api_key > viewkey
+
+	else
+	
+		echo $2 > viewkey
+	
+	fi
+
 elif [ $1 = "-i" ]; then
 
 	if [ -z $2 ]; then

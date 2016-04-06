@@ -1,0 +1,50 @@
+###################################
+#
+# vstat - View API status
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+# read INPUT_Token < Token
+read viewkey < viewkey
+
+if [ -z $1 ]; then
+
+	echo "Error"
+
+elif [ $1 = "-q" ]; then
+
+	curl -s https://view-api.box.com/1/documents/$2 \
+	-H "Authorization: Token $viewkey"|iconv -f windows-1251|jq .
+
+elif [ $1 = "-s" ]; then
+
+	curl -s https://view-api.box.com/1/sessions \
+	-H "Authorization: Token $viewkey" \
+	-H "Content-Type: application/json" \
+	-d '{"document_id": "'$2'"}' \
+	-X POST|iconv -f windows-1251|jq .
+
+elif [ $1 = "-f" ]; then
+
+	curl -s https://view-api.box.com/1/documents/$2/content.pdf \
+	-H "Authorization: Token $viewkey" > download.pdf
+	
+elif [ $1 = "-t" ]; then
+
+	curl -s "https://view-api.box.com/1/documents/$2/thumbnail?width=32&height=32" \
+	-H "Authorization: Token $viewkey"
+
+elif [ $1 = "-?" ]; then
+
+	cat manual|bgrep Name vstat
+
+else
+
+echo "Error"
+
+
+fi
+
