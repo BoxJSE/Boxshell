@@ -1,0 +1,86 @@
+###################################
+#
+# shfocl-asuser - show Folder collaboration with As-User option
+#
+#
+###################################
+
+# Initialize
+
+#!/bin/bash
+read INPUT_Token < Token
+
+#
+
+if [ -z $1 ]; then 
+
+	echo "Error"
+
+else 
+
+	if [ $1 = "-n" ]; then
+
+		if [ -z $2 ]; then
+
+			echo "Folder Name?:"
+			read Folder_Name
+
+			echo "As User ID?:"
+			read AuserID
+
+			bconvni -fo $Folder_Name
+			read Folder_ID < conv
+
+			curl -s https://api.box.com/2.0/folders/$Folder_ID/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "As-User: $AuserID" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		else
+
+			bconvni -fo $2
+			read Folder_ID < conv
+	
+			curl -s https://api.box.com/2.0/folders/$Folder_ID/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "As-User: $3" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		fi
+
+	elif  [ $1 = "-i" ]; then
+
+		if [ -z $2 ]; then
+
+			echo "Folder ID?:"
+			read Folder_ID
+
+			echo "As User ID?:"
+			read AuserID
+
+			curl -s https://api.box.com/2.0/folders/$Folder_ID/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "As-User: $AuserID" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		else
+
+			curl -s https://api.box.com/2.0/folders/$2/collaborations \
+			-H "Authorization: Bearer $INPUT_Token" \
+			-H "As-User: $3" |iconv -f windows-1251|jq -r '.entries[] | { ID: .id, Name: .accessible_by.name, Login: .accessible_by.login, Role: .role }' 
+
+		fi
+
+	elif [ $1 = "-?" ]; then
+
+		cat manual|bgrep Name shfocl-asuser
+
+	else
+
+		echo "Error"
+	
+	fi
+
+fi
+
+
+
+
+

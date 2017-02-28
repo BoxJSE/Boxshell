@@ -271,8 +271,8 @@
 	{
 		"書式":	"setfisl　[オプション]　[ファイル名/ファイルID] [アクセスモード] ",
 		"オプション": {
-			"-n": "ファイル名",
-			"-i": "ファイル名"
+			"-n": "ファイル名 [アクセスモード]をremoveにすると削除",
+			"-i": "ファイル名 [アクセスモード]をremoveにすると削除"
 		}
 	}
 	]
@@ -282,10 +282,10 @@
 	"概要": "フォルダの共有リンクを設定/変更する",
 	"説明": [
 	{
-		"書式":	"setfosl　[オプション]　[フォルダ名/フォルダID/コラボレーションID] ",
+		"書式":	"setfosl　[オプション]　[フォルダ名/フォルダID/コラボレーションID] [アクセスモード] ",
 		"オプション": {
-			"-n": "ファイル名",
-			"-i": "ファイル名"
+			"-n": "ファイル名 [アクセスモード]をremoveにすると削除",
+			"-i": "ファイル名 [アクセスモード]をremoveにすると削除"
 		}
 	}
 	]
@@ -740,7 +740,7 @@
 }
 {
 	"Name": "buser",
-	"概要": "ユーザーを作成する",
+	"概要": "ユーザーを作成する/表示する/変更する",
 	"説明": [
 	{
 		"書式1":	"buser　[オプション]　([login_name] [user_name]  [role])",
@@ -755,6 +755,20 @@
 			"-ie": "User ID なし -> Get Enterptise Users",
 			"-iu": "User ID あり -> Get Users info"
 		}
+	},
+	{
+		"書式3":	"buser　[オプション]　([user ID] [parameter])",
+		"オプション": {
+			"-ch-role": "coadmin, user",
+			"-ch-notify": "true, false",
+			"-ch-status": "active, inactive",
+			"-ch-login": "change login",
+			"-ch-lan": "change language",
+			"-getemailalias": "get email alias",
+			"-addemailalias": "add email alias",
+			"-ch-trackingcode": "add or change tracking code",
+			"-iu-trackingcode": "get tacking code"
+		}
 	}
 	]
 }
@@ -763,9 +777,9 @@
 	"概要": "JWTを作成し、Tokenを取得する",
 	"説明": [
 	{
-		"書式1":	"gjwt",
+		"書式1":	"gjwt [オプション]　[enterprise / user] [EID / UID]  [Script_file name(e.g. jwt_parm_001)])",
 		"オプション": {
-	
+			"-n": "user -> User Token, enterprise -> Enterprise Token"
 		}
 	}
 	]
@@ -849,8 +863,8 @@
 	{
 		"書式":	"setfisl-asuser　[オプション]　[ファイル名/ファイルID] [アクセスモード]  [User ID] ",
 		"オプション": {
-			"-n": "ファイル名",
-			"-i": "ファイル名"
+			"-n": "ファイル名 [アクセスモード]をremoveにすると削除",
+			"-i": "ファイル名 [アクセスモード]をremoveにすると削除"
 		}
 	}
 	]
@@ -936,10 +950,10 @@
 	"概要": "フォルダの共有リンクを設定/変更する  - As-Userモード",
 	"説明": [
 	{
-		"書式":	"setfosl-asuser　[オプション]　[フォルダ名/フォルダID/コラボレーションID] [user　ID]",
+		"書式":	"setfosl-asuser　[オプション]　[フォルダ名/フォルダID/コラボレーションID] [アクセスモード] [user　ID]",
 		"オプション": {
-			"-n": "ファイル名",
-			"-i": "ファイル名"
+			"-n": "ファイル名 [アクセスモード]をremoveにすると削除",
+			"-i": "ファイル名 [アクセスモード]をremoveにすると削除"
 		}
 	}
 	]
@@ -1034,6 +1048,47 @@
 			"-s": "Sessionの状態確認 [id]",
 			"-f": "ファイルのフェッチ（PDFでダウンロード）[id] (pdfは、ローカルフォルダにdownload.pdfの名前でダウンロードされる。）",
 			"-t": "サムネイル（工事中）"
+		}
+	}
+	]
+}
+{
+	"Name": "setfol",
+	"概要": "Folderの設定変更",
+	"説明": [
+	{
+		"書式":	"setfol　[オプション]　[FOLDER ID]",
+		"オプション": {
+			"-sync-on": "同期オン",
+			"-sync-off": "同期オフ",
+			"-name": "名前変更"
+		}
+	}
+	]
+}
+{
+	"Name": "setfol-asuser",
+	"概要": "Folderの設定変更",
+	"説明": [
+	{
+		"書式":	"setfol-asuser　[オプション]　[FOLDER ID] [USER ID]",
+		"オプション": {
+			"-sync-on": "同期オン",
+			"-sync-off": "同期オフ",
+			"-name": "名前変更"
+		}
+	}
+	]
+}
+{
+	"Name": "shfocl-asuser",
+	"概要": "フォルダのコラボレーションを表示する。",
+	"説明": [
+	{
+		"書式":	"shfolcl-asuser　[オプション]　[フォルダ名/フォルダID/コラボレーションID] [As-User ID]",
+		"オプション": {
+		"-n":	"フォルダ名で指定する",
+		"-i":  "フォルダIDで指定する"
 		}
 	}
 	]
